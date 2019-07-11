@@ -1,0 +1,10 @@
+{
+  "TableName": "JobLock",
+  "BillingMode": "PAY_PER_REQUEST",
+  "KeySchema": [
+    { "AttributeName": "Key", "KeyType": "HASH" }
+  ],
+  "AttributeDefinitions": [
+    { "AttributeName": "Key", "AttributeType": "S" }
+  ]
+}
