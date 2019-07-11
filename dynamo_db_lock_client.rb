@@ -13,15 +13,15 @@ class DynamoDBLockClient
   end
 
   def acquire_lock(key)
-    resp = @opts.dynamo_db.get_item(
-      key: { 'Key' => key },
-      table_name: @opts.table_name
-    )
-    raise DynamoDBLockException unless resp.item.nil?
-
     @opts.dynamo_db.put_item(
       item: { 'Key' => key, 'ttl' => Time.now.to_i + @opts.ttl },
-      table_name: @opts.table_name
+      table_name: @opts.table_name,
+      condition_expression: 'attribute_not_exists(#k)',
+      expression_attribute_names: {
+        '#k': 'Key'
+      }
     )
+  rescue Aws::DynamoDB::Errors::ConditionalCheckFailedException => _e
+    raise DynamoDBLockException
   end
 end
